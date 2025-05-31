@@ -20,7 +20,12 @@ class parallel_to_serial_transaction extends uvm_transaction;
   // UVM factory registration 
   //--------------------------------------------------------------------
   `uvm_object_utils_begin(parallel_to_serial_transaction)
-    // TODO : Register all the variables declared with the factory over here
+        `uvm_field_int(parallel_data,     UVM_ALL_ON)
+        `uvm_field_int(data_valid,        UVM_ALL_ON)
+        `uvm_field_int(parity_enable,     UVM_ALL_ON)
+        `uvm_field_int(parity_type,       UVM_ALL_ON)
+        `uvm_field_int(start_bit,         UVM_ALL_ON)
+        `uvm_field_int(stop_bit,          UVM_ALL_ON)
   `uvm_object_utils_end
 
   //--------------------------------------------------------------------
@@ -31,6 +36,26 @@ class parallel_to_serial_transaction extends uvm_transaction;
   function new(string name = "parallel_to_serial_transaction");
     super.new(name);
   endfunction : new
+
+    constraint c_data_valid {
+        soft data_valid == DATA_VALID_BY_ONE;
+    }
+
+    constraint c_parity_enable {
+      soft parity_enable inside {PARITY_ENABLED, PARITY_DISABLED};
+    }
+
+    constraint c_parity_type {
+      soft parity_type inside {EVEN_PARITY, ODD_PARITY};  // 0 = even, 1 = odd
+    }
+
+    constraint c_start_bit {
+        soft start_bit == START_BIT_ZERO; 
+    }
+
+    constraint c_stop_bit {
+        soft stop_bit == STOP_BIT_ONE;  
+    }
 
   //--------------------------------------------------------------------
   // Method name : do_compare 
@@ -68,6 +93,19 @@ class parallel_to_serial_transaction extends uvm_transaction;
              parallel_data, data_valid, parity_enable, parity_type, start_bit, stop_bit);
     return msg;
 endfunction : convert2string
+
+  // ----------------------------------------------------------
+  // do_print (Field Registration for Debug)
+  // ----------------------------------------------------------
+  virtual function void do_print(uvm_printer printer);
+        super.do_print(printer);
+        printer.print_field($sformatf("parallel_data"), parallel_data, WIDTH, UVM_HEX);
+        printer.print_field("data_valid",     data_valid,     1, UVM_BIN);
+        printer.print_field("parity_enable",  parity_enable,  1, UVM_BIN);
+        printer.print_field("parity_type",    parity_type,    1, UVM_BIN);
+        printer.print_field("start_bit",      start_bit,      1, UVM_BIN);
+        printer.print_field("stop_bit",       stop_bit,       1, UVM_BIN);
+    endfunction 
 
 endclass : parallel_to_serial_transaction
 
