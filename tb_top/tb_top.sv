@@ -47,7 +47,7 @@ module tb_top;
     // UVM test launch and interface config
     initial begin
         // Pass full interface handle for modport selection in UVM components
-        uvm_config_db#(virtual serial_if)::set(null, "*", "vif", intf);
+        uvm_config_db#(virtual parallel_to_serial_converter_intf)::set(null, "*", "vif", m_intf);
 
         // Start UVM test (default or specified via +UVM_TESTNAME)
         run_test();
