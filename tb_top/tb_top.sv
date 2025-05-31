@@ -54,5 +54,3 @@ module tb_top;
     end
 
 endmodule
-
-Sent from Outlook for Android
