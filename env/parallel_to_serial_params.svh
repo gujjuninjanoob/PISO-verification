@@ -15,6 +15,11 @@ package parallel_to_serial_params_pkg;
   parameter int MAX_NUM_PACKETS=1000;
   //width for parallel data
   parameter int WIDTH=8;
+  parameter bit ODD_PARITY=1;
+  parameter bit EVEN_PARITY=0;
+  parameter bit DATA_VALID_BY_ONE=1;
+  parameter bit START_BY_ZERO=0;
+  parameter bit STOP_BY_ONE=1;
   
   
 endpackage  
