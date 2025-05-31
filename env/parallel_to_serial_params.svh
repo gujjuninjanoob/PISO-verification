@@ -13,6 +13,8 @@ package parallel_to_serial_params_pkg;
   //Num of packets
   parameter int MIN_NUM_PACKETS=1;
   parameter int MAX_NUM_PACKETS=1000;
+  //width for parallel data
+  parameter int WIDTH=8;
   
   
 endpackage  
