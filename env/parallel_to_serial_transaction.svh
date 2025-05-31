@@ -10,7 +10,12 @@ class parallel_to_serial_transaction extends uvm_transaction;
   //--------------------------------------------------------------------
   // Variables declarations
   //------------------------------------------------------------------
-  
+    rand bit [WIDTH-1:0] parallel_data;
+    rand bit data_valid;
+    rand bit parity_enable;
+    rand bit parity_type;
+    rand bit start_bit;
+    rand bit stop_bit;
   //--------------------------------------------------------------------
   // UVM factory registration 
   //--------------------------------------------------------------------
@@ -42,7 +47,14 @@ class parallel_to_serial_transaction extends uvm_transaction;
       return 0; 
     end//if(!$cast(trans, rhs)
 
-   // TODO : Add the comparision over here
+    if (this.parallel_data    !== trans.parallel_data)    return 0;
+    if (this.data_valid       !== trans.data_valid)       return 0;
+    if (this.parity_enable    !== trans.parity_enable)    return 0;
+    if (this.parity_type      !== trans.parity_type)      return 0;
+    if (this.start_bit        !== trans.start_bit)        return 0;
+    if (this.stop_bit         !== trans.stop_bit)         return 0;
+
+    return 1;
 
   endfunction : do_compare
 
@@ -52,11 +64,10 @@ class parallel_to_serial_transaction extends uvm_transaction;
   //--------------------------------------------------------------------
   virtual function string convert2string();
     string msg;
-    
-    // TODO - Update this to print required variables of the transaction with different transaction types.
-
+    $sformat(msg, "parallel_data = 0x%0h, data_valid = %0b, parity_enable = %0b, parity_type = %0b, start_bit = %0b, stop_bit = %0b",
+             parallel_data, data_valid, parity_enable, parity_type, start_bit, stop_bit);
     return msg;
-  endfunction
+endfunction : convert2string
 
 endclass : parallel_to_serial_transaction
 
