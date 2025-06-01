@@ -39,15 +39,15 @@ class parallel_to_serial_scoreboard #(type REQ = parallel_to_serial_transaction)
   endfunction
 
   task run_phase(uvm_phase phase);
-    parallel_to_serial_transaction#(WIDTH) tr;
+    parallel_to_serial_transaction#(WIDTH) m_transaction;
     forever begin
-      item_fifo.get(tr);
-      tr.do_print();
-      check_serial_output(tr);
+      item_fifo.get(m_transaction);
+      m_transaction.do_print();
+      check_serial_output(m_transaction);
     end
   endtask
 
-  task check_serial_output(parallel_to_serial_transaction#(WIDTH) tr);
+  task check_serial_output(parallel_to_serial_transaction#(WIDTH) m_transaction);
     bit [WIDTH+2:0] expected_bits;
     bit parity_bit;
     int bit_count;
@@ -59,13 +59,13 @@ class parallel_to_serial_scoreboard #(type REQ = parallel_to_serial_transaction)
     bit_count++;
 
     for (int i = 0; i < WIDTH; i++) begin
-      expected_bits[bit_count] = tr.parallel_data[i];
+      expected_bits[bit_count] = m_transaction.parallel_data[i];
       bit_count++;
     end
 
-    if (tr.parity_enable) begin
-      parity_bit = ^tr.parallel_data;
-      if (tr.parity_type == 1) // ODD parity
+    if (m_transaction.parity_enable) begin
+      parity_bit = ^m_transaction.parallel_data;
+      if (m_transaction.parity_type == 1) // ODD parity
         parity_bit = ~parity_bit;
 
       expected_bits[bit_count] = parity_bit;
