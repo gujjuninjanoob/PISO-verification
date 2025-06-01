@@ -6,7 +6,7 @@
 
 `ifndef PARALLEL_TO_SERIAL_CONFIG_SVH
 `define PARALLEL_TO_SERIAL_CONFIG_SVH
-
+typedef enum { NONE, LOW, MEDIUM, HIGH } verbosity_e;
 class parallel_to_serial_config extends uvm_object;
 
   //--------------------------------------------------------------------
@@ -19,6 +19,7 @@ class parallel_to_serial_config extends uvm_object;
   rand bit global_parity_en;
   rand bit [BAUD_RATE-1:0] baud_rate;
   rand int num_pkts;
+  rand verbosity_e verb_dbg_msg_e;
 
     // Constraint for checker coverage
     constraint c_en_chk_cov {
@@ -45,6 +46,7 @@ class parallel_to_serial_config extends uvm_object;
     `uvm_field_int(global_parity_en,UVM_ALL_ON)
     `uvm_field_int(baud_rate,UVM_ALL_ON)
     `uvm_field_int(num_pkts,UVM_ALL_ON) 
+    `uvm_field_int(verb_dbg_msg_e,UVM_ALL_ON) 
     
   `uvm_object_utils_end
 
