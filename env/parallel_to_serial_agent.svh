@@ -6,7 +6,7 @@
 `ifndef PARALLEL_TO_SERIAL_AGENT_SVH
 `define PARALLEL_TO_SERIAL_AGENT_SVH
 
-class parallel_to_serial_agent extends uvm_agent;
+class parallel_to_serial_agent #(type REQ = parallel_to_serial_transaction) extends uvm_agent#(REQ);
 
   //--------------------------------------------------------------------
   // Components declarations
@@ -27,12 +27,12 @@ class parallel_to_serial_agent extends uvm_agent;
   virtual parallel_to_serial_if m_vif;
 
   // UVM factory registraction
-  `uvm_component_utils_begin(parallel_to_serial_agent)
+  `uvm_component_param_utils_begin(parallel_to_serial_agent)
    `uvm_field_object(m_driver    , UVM_ALL_ON)
    `uvm_field_object(m_sequencer , UVM_ALL_ON)
    `uvm_field_object(m_monitor   , UVM_ALL_ON)
    `uvm_field_object(m_cfg       , UVM_ALL_ON)
-  `uvm_component_utils_end
+  `uvm_component_param_utils_end
 
   //--------------------------------------------------------------------
   // Method name : new
