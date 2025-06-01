@@ -24,9 +24,8 @@ class parallel_to_serial_driver#(type REQ = parallel_to_serial_transaction) exte
   //---------------------------------------------------------------
   // UVM factory registration 
   //---------------------------------------------------------------
-  `uvm_component_param_utils_begin(parallel_to_serial_driver#(REQ))
-   `uvm_field_object(m_cfg , UVM_ALL_ON)
-  `uvm_component_utils_end
+  `uvm_component_param_utils(parallel_to_serial_driver#(REQ))
+
 
   //--------------------------------------------------------------------
   // Method name : new
@@ -85,7 +84,8 @@ class parallel_to_serial_driver#(type REQ = parallel_to_serial_transaction) exte
 
               // Raise the objection after item is received from sequencer
               phase.raise_objection(this);
-
+              
+               REQ rsp;     
               // Cast the request with the response packet
               $cast(rsp,req.clone());
 
@@ -106,7 +106,7 @@ class parallel_to_serial_driver#(type REQ = parallel_to_serial_transaction) exte
 
           begin : EXIT_ON_RESET
             // Reset is asserted
-            @(negedge m_vif.reset_f);
+            @(negedge m_vif.RST_N);
           end : EXIT_ON_RESET
         join_any
 
@@ -128,10 +128,19 @@ class parallel_to_serial_driver#(type REQ = parallel_to_serial_transaction) exte
   virtual task drive_pkt(REQ trans);
 
     // Print the transaction 
-   `uvm_info("drive_pkt",$psprintf("Transaction Received from the sequencer is : \n%0s", 
-       trans.sprint()),m_cfg.verb_imp_msg_e);
+    // Wait for clocking block edge
+    @(vif.drv_cb);
+    m_vif.drv_cb.DI                <= trans.parallel_data;
+    m_vif.drv_cb.DVALID            <= trans.data_valid;
+    m_vif.drv_cb.CTRL_PARITY_EN    <= trans.parity_enable;
+    m_vif.drv_cb.CTRL_PARITY_TYPE  <= trans.parity_type;
+    m_vif.drv_cb.START             <= trans.start_bit;
+    m_vif.drv_cb.STOP              <= trans.stop_bit;
 
-    // TODO : Add the logic to drive the packet on the interface
+    // Hold for a cycle, then deassert DVALID
+    repeat (1) @(m_vif.drv_cb);
+    m_vif.drv_cb.DVALID <= 0;
+
 
   endtask : drive_pkt
 
@@ -143,13 +152,14 @@ class parallel_to_serial_driver#(type REQ = parallel_to_serial_transaction) exte
   //--------------------------------------------------------------------
   virtual task wait_for_reset();
     // Wait for reset to be asserted
-    wait(m_vif.reset_f == 0);
+    wait(m_vif.RST_N == 0);
    `uvm_info("wait_for_reset","Reset is Asserted",m_cfg.verb_dbg_msg_e)
 
-    // TODO : Reset all the local variables and interface signals 
+    // TODO: Reset interface signals if needed
+    // e.g., m_vif.drv_cb.DVALID <= 0; m_vif.drv_cb.DI <= '0;
 
     // Wait for reset to be deasserted
-    @(posedge m_vif.reset_f);
+    @(posedge m_vif.RST_N);
    `uvm_info("wait_for_reset","Reset is Deasserted",m_cfg.verb_dbg_msg_e)
   endtask : wait_for_reset
 
