@@ -1,14 +1,14 @@
 `ifndef PARALLEL_TO_SERIAL_ENV_SVH
 `define PARALLEL_TO_SERIAL_ENV_SVH
 
-class parallel_to_serial_env #(int WIDTH = 8) extends uvm_env;
+class parallel_to_serial_env #(type REQ = parallel_to_serial_transaction) extends uvm_env#(REQ);
 
-  `uvm_component_param_utils(parallel_to_serial_env#(WIDTH))
+  `uvm_component_param_utils(parallel_to_serial_env#(REQ)
 
   // Sub-components
-  parallel_to_serial_driver #(WIDTH)   m_driver;
-  parallel_to_serial_monitor #(WIDTH) m_monitor;
-  parallel_to_serial_scoreboard #(WIDTH) m_scoreboard;
+   parallel_to_serial_driver #(REQ)   m_driver;
+   parallel_to_serial_monitor #(REQ) m_monitor;
+   parallel_to_serial_scoreboard #(REQ) m_scoreboard;
 
   // Virtual interface
   virtual parallel_to_serial_if m_vif;
