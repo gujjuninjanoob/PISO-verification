@@ -53,7 +53,7 @@ class parallel_to_serial_base_test extends uvm_test;
     
     for (int i = 0; i < m_cfg.num_pkts; i++) begin
       `uvm_info("BASE_TEST", $sformatf("Starting sequence %0d", i+1), m_cfg.verb_dbg_msg_e)
-      seq.start(m_env.m_agent.m_sequencer,m_transaction);
+      m_seq.start(m_env.m_agent.m_sequencer,m_transaction);
     end 
 
     phase.drop_objection(this);
