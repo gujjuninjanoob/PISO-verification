@@ -20,6 +20,7 @@ class parallel_to_serial_config extends uvm_object;
   rand bit [BAUD_RATE-1:0] baud_rate;
   rand int num_pkts;
   rand verbosity_e verb_dbg_msg_e;
+  uvm_agent_mode_e agent_mode;
 
     // Constraint for checker coverage
     constraint c_en_chk_cov {
@@ -47,6 +48,8 @@ class parallel_to_serial_config extends uvm_object;
     `uvm_field_int(baud_rate,UVM_ALL_ON)
     `uvm_field_int(num_pkts,UVM_ALL_ON) 
     `uvm_field_int(verb_dbg_msg_e,UVM_ALL_ON) 
+     `uvm_field_int(agent_mode,UVM_ALL_ON)
+  
     
   `uvm_object_utils_end
 
