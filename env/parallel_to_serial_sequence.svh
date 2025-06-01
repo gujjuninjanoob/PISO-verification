@@ -13,7 +13,7 @@ class parallel_to_serial_sequence extends uvm_sequence#(parallel_to_serial_trans
   `uvm_object_utils(parallel_to_serial_seq)
 
   // Local variables matching transaction fields
-  rand bit [7:0]    parallel_data;
+  rand bit [WIDTH-1:0]    parallel_data;
   rand bit          data_valid;
   rand bit          parity_enable;
   rand bit          parity_type;
