@@ -63,7 +63,7 @@ class parallel_to_serial_sequence extends uvm_sequence#(parallel_to_serial_trans
     finish_item(tx);
 
     // Print transaction info
-    tx.print();
+    tx.do_print();
     `uvm_info(get_type_name(), $sformatf("Sent transaction: %s", tx.convert2string()), m_cfg.verb_dbg_msg_e)
   endtask
 
