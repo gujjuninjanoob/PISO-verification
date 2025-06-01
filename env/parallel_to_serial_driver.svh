@@ -134,8 +134,6 @@ class parallel_to_serial_driver#(type REQ = parallel_to_serial_transaction) exte
     m_vif.drv_cb.DVALID            <= trans.data_valid;
     m_vif.drv_cb.CTRL_PARITY_EN    <= trans.parity_enable;
     m_vif.drv_cb.CTRL_PARITY_TYPE  <= trans.parity_type;
-    m_vif.drv_cb.START             <= trans.start_bit;
-    m_vif.drv_cb.STOP              <= trans.stop_bit;
 
     // Hold for a cycle, then deassert DVALID
     repeat (1) @(m_vif.drv_cb);
