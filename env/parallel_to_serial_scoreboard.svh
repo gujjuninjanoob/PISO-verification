@@ -55,7 +55,7 @@ class parallel_to_serial_scoreboard #(type REQ = parallel_to_serial_transaction)
     expected_bits = 0;
     bit_count = 0;
 
-    expected_bits[bit_count] = 1'b0; // Start bit
+    expected_bits[bit_count] = m_transaction.start_bit; // Start bit
     bit_count++;
 
     for (int i = 0; i < WIDTH; i++) begin
@@ -72,7 +72,7 @@ class parallel_to_serial_scoreboard #(type REQ = parallel_to_serial_transaction)
       bit_count++;
     end
 
-    expected_bits[bit_count] = 1'b1; // Stop bit
+    expected_bits[bit_count] = m_transaction.stop_bit; // Stop bit
     bit_count++;
 
     expected_frame_buffer = 0;
