@@ -8,7 +8,7 @@ class parallel_to_serial_scoreboard #(int WIDTH = 8) extends uvm_scoreboard;
   uvm_analysis_export #(parallel_to_serial_transaction#(WIDTH)) item_export;
   uvm_tlm_analysis_fifo #(parallel_to_serial_transaction#(WIDTH)) item_fifo;
 
-  virtual parallel_to_serial_if vif;
+  virtual parallel_to_serial_if m_vif;
 
   int unsigned mismatch_count;
   bit [1023:0] expected_frame_buffer;
@@ -29,16 +29,20 @@ class parallel_to_serial_scoreboard #(int WIDTH = 8) extends uvm_scoreboard;
     item_fifo = new("item_fifo", this);
     item_export.connect(item_fifo.analysis_export);
 
-    if (!uvm_config_db#(virtual parallel_to_serial_if)::get(this, "", "parallel_to_serial_if", vif)) begin
-      `uvm_fatal(get_type_name(), "Failed to get interface handle from config DB")
-    end
+    m_cfg = m_cfg.get_cfg(this,"parallel_to_serial_config");
+    
+    `uvm_info("build_phase","In the build phase of SCOREBOARD",m_cfg.verb_dbg_msg_e);
+
+    // If interface is null, then it is not received from the top level hirerchey
+    if((!uvm_config_db#(virtual parallel_to_serial_if)::get(this, "", "parallel_to_serial_if",m_vif)) && (m_vif == null)) begin
+     `uvm_fatal("build_phase","The interface is not received in the parallel_to_serial_monitor");
   endfunction
 
   task run_phase(uvm_phase phase);
     parallel_to_serial_transaction#(WIDTH) tr;
     forever begin
       item_fifo.get(tr);
-      tr.print();
+      tr.do_print();
       check_serial_output(tr);
     end
   endtask
@@ -74,23 +78,23 @@ class parallel_to_serial_scoreboard #(int WIDTH = 8) extends uvm_scoreboard;
     expected_frame_buffer = 0;
     frame_len = bit_count;
 
-    @(posedge vif.DCLK);
+    @(posedge m_vif.DCLK);
     for (int i = 0; i < frame_len; i++) begin
       expected_frame_buffer[i] = expected_bits[i];
     end
 
     for (int i = 0; i < frame_len; i++) begin
-      if (vif.TXD !== expected_frame_buffer[i]) begin
-        `uvm_error("SCOREBOARD", $sformatf("Mismatch at bit[%0d]: Expected %0b, Got %0b", i, expected_frame_buffer[i], vif.TXD))
+      if (m_vif.TXD !== expected_frame_buffer[i]) begin
+        `uvm_error("SCOREBOARD", $sformatf("Mismatch at bit[%0d]: Expected %0b, Got %0b", i, expected_frame_buffer[i], m_vif.TXD))
         mismatch_count++;
       end else begin
-        `uvm_info("SCOREBOARD", $sformatf("Bit[%0d] matched: %0b", i, vif.TXD), UVM_LOW)
+        `uvm_info("SCOREBOARD", $sformatf("Bit[%0d] matched: %0b", i, m_vif.TXD), m_cfg.verb_dbg_msg_e)
       end
-      @(posedge vif.DCLK);
+      @(posedge m_vif.DCLK);
     end
 
     total_frames_checked++;
-    `uvm_info("SCOREBOARD", $sformatf("Frame %0d checked. Mismatches this frame: %0d", total_frames_checked, mismatch_count), UVM_LOW)
+    `uvm_info("SCOREBOARD", $sformatf("Frame %0d checked. Mismatches this frame: %0d", total_frames_checked, mismatch_count), m_cfg.verb_dbg_msg_e)
   endtask
 
   function void report_phase(uvm_phase phase);
@@ -98,8 +102,8 @@ class parallel_to_serial_scoreboard #(int WIDTH = 8) extends uvm_scoreboard;
     if (total_frames_checked == 0) begin
       `uvm_error("SCOREBOARD", "No transactions were received and processed in the scoreboard.")
     end else begin
-      `uvm_info("SCOREBOARD", $sformatf("Total frames checked: %0d", total_frames_checked), UVM_LOW)
-      `uvm_info("SCOREBOARD", $sformatf("Total mismatches: %0d", mismatch_count), UVM_LOW)
+      `uvm_info("SCOREBOARD", $sformatf("Total frames checked: %0d", total_frames_checked), m_cfg.verb_dbg_msg_e)
+      `uvm_info("SCOREBOARD", $sformatf("Total mismatches: %0d", mismatch_count), m_cfg.verb_dbg_msg_e)
     end
   endfunction
 
