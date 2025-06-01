@@ -86,7 +86,16 @@ class parallel_to_serial_monitor#(type REQ = parallel_to_serial_transaction) ext
       fork begin
         fork
           begin : SAMPLE_PROTOTOTYPE_INTERFACE
-            // TODO : Add the logic to sample the signals on interface
+            @(posedge m_vif.mon_cb);
+            m_trans_collected = REQ::type_id::create("m_trans_collected");
+            m_trans_collected.parallel_data = m_vif.mon_cb.DI;
+            m_trans_collected.data_valid    = m_vif.mon_cb.DVALID;
+            m_trans_collected.parity_enable = m_vif.mon_cb.CTRL_PARITY_EN;
+            // fill parity_type, start_bit, stop_bit from protocol-specific logic if applicable
+            `uvm_info(get_type_name(), $sformatf("Monitor collected: %s", m_trans_collected.convert2string()), UVM_MEDIUM)
+            write_transaction(m_trans_collected);
+      end
+    end
           end : SAMPLE_PROTOTOTYPE_INTERFACE
 
           begin : EXIT_ON_RESET
