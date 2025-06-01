@@ -1,12 +1,12 @@
 `ifndef PARALLEL_TO_SERIAL_SCOREBOARD_SVH
 `define PARALLEL_TO_SERIAL_SCOREBOARD_SVH
 
-class parallel_to_serial_scoreboard #(int WIDTH = 8) extends uvm_scoreboard;
+class parallel_to_serial_scoreboard #(type REQ = parallel_to_serial_transaction) extends uvm_scoreboard#(REQ);
 
-  `uvm_component_param_utils(parallel_to_serial_scoreboard#(WIDTH))
+  `uvm_component_param_utils(parallel_to_serial_scoreboard#(REQ))
 
-  uvm_analysis_export #(parallel_to_serial_transaction#(WIDTH)) item_export;
-  uvm_tlm_analysis_fifo #(parallel_to_serial_transaction#(WIDTH)) item_fifo;
+  uvm_analysis_export #(parallel_to_serial_transaction#(REQ)) item_export;
+  uvm_tlm_analysis_fifo #(parallel_to_serial_transaction#(REQ)) item_fifo;
 
   virtual parallel_to_serial_if m_vif;
 
