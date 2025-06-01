@@ -1,4 +1,4 @@
-/ Description   : This is a agent class having the instances of parallel_to_serial
+// Description   : This is a agent class having the instances of parallel_to_serial
 //                 driver, parallel_to_serial sequencer and parallel_to_serial monitor.
 //                 The agent can be configured as either ACTIVE or PASSIVE. 
 //----------------------------------------------------------------------
@@ -22,6 +22,9 @@ class parallel_to_serial_agent extends uvm_agent;
 
   // Handle of the parallel_to_serial configurations
   parallel_to_serial_config m_cfg;
+  
+  //Handle of parallel_to_serial_if 
+  virtual parallel_to_serial_if m_vif;
 
   // UVM factory registraction
   `uvm_component_utils_begin(parallel_to_serial_agent)
@@ -50,10 +53,22 @@ class parallel_to_serial_agent extends uvm_agent;
 
     // Calling the build method of the parent class
     super.build_phase(phase);
-
+   //Getting the interface Handle
+    if (!uvm_config_db#(virtual parallel_to_serial_if)::get(this, "", "vif", m_vif)) begin
+  `uvm_fatal("NOVIF", "Virtual interface not set in config DB for agent")
+   end 
+    m_driver.vif = vif;
+    m_monitor.vif = vif;
     // Get the configuration
     m_cfg = parallel_to_serial_config::get_cfg(this,"parallel_to_serial_config");
-   
+    
+    if (m_cfg != null) begin
+    this.is_active = m_cfg.agent_mode;
+    end else begin
+    `uvm_warning("PAR_TO_SER_AGENT", "Config object not found; defaulting is_active to UVM_ACTIVE")
+    this.is_active = UVM_ACTIVE;
+    end
+    
     // If configuration is active then create the driver, sequencer, monitor
     if(is_active == UVM_ACTIVE) begin
 
