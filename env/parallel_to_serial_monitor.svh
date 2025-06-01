@@ -91,7 +91,7 @@ class parallel_to_serial_monitor#(type REQ = parallel_to_serial_transaction) ext
 
           begin : EXIT_ON_RESET
             //if reset is received then break the running threads
-            @(negedge m_vif.reset_f);
+            @(negedge m_vif.RST_N);
           end : EXIT_ON_RESET
         join_any
         disable fork;
@@ -110,11 +110,11 @@ class parallel_to_serial_monitor#(type REQ = parallel_to_serial_transaction) ext
   //--------------------------------------------------------------------
   virtual task wait_for_reset();
     // Wait for reset to be asserted
-    wait(m_vif.reset_f == 0);
+    wait(m_vif.RST_N == 0);
    `uvm_info("wait_for_reset","Reset is Asserted",m_cfg.verb_dbg_msg_e)
 
     // Wait for reset to be deasserted
-    @(posedge m_vif.reset_f);
+    @(posedge m_vif.RST_N);
    `uvm_info("wait_for_reset","Reset is Deasserted",m_cfg.verb_dbg_msg_e)
   endtask : wait_for_reset
 
