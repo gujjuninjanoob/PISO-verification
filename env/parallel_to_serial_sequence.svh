@@ -38,8 +38,8 @@ class parallel_to_serial_sequence extends uvm_sequence#(parallel_to_serial_trans
     `uvm_info(get_type_name(), "Starting randomized parallel_to_serial sequence", m_cfg.verb_dbg_msg_e)
 
     // Create and initialize transaction
-    parallel_to_serial_transaction tx;
-    tx = parallel_to_serial_transaction::type_id::create("tx");
+    parallel_to_serial_transaction m_transaction;
+    m_transaction = parallel_to_serial_transaction::type_id::create("m_transaction");
 
     // Randomize local sequence variables
     if (!randomize()) begin
@@ -47,24 +47,24 @@ class parallel_to_serial_sequence extends uvm_sequence#(parallel_to_serial_trans
       return;
     end
 
-    // Assign values to transaction fields
-    tx.parallel_data  = parallel_data;
-    tx.data_valid     = data_valid;
-    tx.parity_enable  = parity_enable;
-    tx.parity_type    = parity_type;
-    tx.start_bit      = start_bit;
-    tx.stop_bit       = stop_bit;
-
     // Start and send item
-    start_item(tx);
-    if (!tx.randomize()) begin
-      `uvm_warning(get_type_name(), "Randomization failed for transaction — using assigned values only")
-    end
-    finish_item(tx);
+    start_item(m_transaction);
+    //more control over the test so not randomizing  here.
+    //    if (!m_transaction.randomize()) begin
+    //  `uvm_warning(get_type_name(), "Randomization failed for transaction — using assigned values only")
+    //end
+        // Assign values to transaction fields
+    m_transaction.parallel_data  = parallel_data;
+    m_transaction.data_valid     = data_valid;
+    m_transaction.parity_enable  = parity_enable;
+    m_transaction.parity_type    = parity_type;
+    m_transaction.start_bit      = start_bit;
+    m_transaction.stop_bit       = stop_bit;
+    finish_item(m_transaction);
 
     // Print transaction info
-    tx.do_print();
-    `uvm_info(get_type_name(), $sformatf("Sent transaction: %s", tx.convert2string()), m_cfg.verb_dbg_msg_e)
+    m_transaction.do_print();
+    `uvm_info(get_type_name(), $sformatf("Sent transaction: %s", m_transaction.convert2string()), m_cfg.verb_dbg_msg_e)
   endtask
 
 endclass : parallel_to_serial_sequence 
